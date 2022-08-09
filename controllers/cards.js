@@ -26,7 +26,7 @@ module.exports.deleteCard = (req, res) => {
     .then(card => res.send(card))
     .catch(() =>
     if (err.name === 'CastError') {
-      res.status(400).send({ message: ‘’Некорректный id’ });
+      res.status(400).send({ message: 'Некорректный id' });
     } else {
       res.status(500).send({ message: 'Произошла ошибка' });
     }

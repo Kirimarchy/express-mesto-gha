@@ -16,17 +16,13 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  req.card = {
-    _id: "62ec518e8ade1375d48b713f"
-  };
-
-  next();
-});
-
 mongoose.connect("mongodb://localhost:27017/mestodb");
 
 app.use("/users", require("./routes/users"));
 app.use("/cards", require("./routes/cards"));
+
+app.use((req, res) => {
+  res.status(404).send({ message: Здесь нужен ответ });
+});
 
 app.listen(PORT);
