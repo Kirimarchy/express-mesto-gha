@@ -1,4 +1,6 @@
 const Card = require("../models/card");
+import { statuses } from  "../constants/statuses";
+
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -14,9 +16,9 @@ module.exports.createCard = (req, res) => {
     .then(card => res.send(card))
     .catch(() =>
     if (err.name === 'ValidationError') {
-      res.status(400).send({ message: 'Некорректные данные'});
+      res.status(statuses.badRequest).send({ message: 'Некорректные данные'});
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(statuses.defaultError).send({ message: 'Произошла ошибка' });
       }
     );
 };
