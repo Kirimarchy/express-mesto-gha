@@ -1,9 +1,9 @@
 const User = require("../models/user");
-import { statuses } from  "../constants/statuses";
+const Statuses = require( "../constants/statuses");
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then(users => res.send(users))
-    .catch(() => res.status(statuses.defaultError).send({ message: "Ошибка по умолчанию" }));
+    .catch(() => res.status(Statuses.defaultError).send({ message: "Ошибка по умолчанию" }));
 };
 
 module.exports.getUser = (req, res) => {
@@ -11,9 +11,9 @@ module.exports.getUser = (req, res) => {
     .then(user => res.send(user))
     .catch(() =>
     if (err.name === 'CastError') {
-      res.status(statuses.badRequest).send({ message: 'Некорректный id'});
+      res.status(Statuses.badRequest).send({ message: 'Некорректный id'});
     } else {
-      res.status(statuses.defaultError).send({ message: 'Произошла ошибка' });
+      res.status(Statuses.defaultError).send({ message: 'Произошла ошибка' });
     }
     );
 }
@@ -25,9 +25,9 @@ module.exports.createUser = (req, res) => {
     .then(newUser => res.send(newUser))
     .catch(() =>
     if (err.name === 'ValidationError') {
-      res.status(statuses.badRequest).send({ message: 'Некорректные данные'});
+      res.status(Statuses.badRequest).send({ message: 'Некорректные данные'});
       } else {
-        res.status(statuses.defaultError).send({ message: 'Произошла ошибка' });
+        res.status(Statuses.defaultError).send({ message: 'Произошла ошибка' });
       }
     );
 };
@@ -39,9 +39,9 @@ module.exports.updateProfile = (req, res) => {
     .then(newUser => res.send(newUser))
     .catch(() =>
      if (err.name === 'ValidationError') {
-      res.status(statuses.badRequest).send({ message: 'Некорректные данные' });
+      res.status(Statuses.badRequest).send({ message: 'Некорректные данные' });
       } else {
-        res.status(statuses.defaultError).send({ message: 'Произошла ошибка' });
+        res.status(Statuses.defaultError).send({ message: 'Произошла ошибка' });
       }
     );
 };
@@ -53,9 +53,9 @@ module.exports.updateAvatar = (req, res) => {
     .then(newUser => res.send(newUser))
     .catch(() =>
     if (err.name === 'ValidationError') {
-      res.status(statuses.badRequest).send({ message: 'Некорректные данные'});
+      res.status(Statuses.badRequest).send({ message: 'Некорректные данные'});
       } else {
-        res.status(statuses.defaultError).send({ message: 'Произошла ошибка' });
+        res.status(Statuses.defaultError).send({ message: 'Произошла ошибка' });
       }
     );
 };

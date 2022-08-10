@@ -1,12 +1,12 @@
 const Card = require("../models/card");
-import { statuses } from  "../constants/statuses";
+const Statuses = require( "../constants/statuses");
 
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .populate(["owner", "likes"])
     .then(cards => res.send(cards))
-    .catch(() => res.status(500).send({ message: "Ошибка по умолчанию" }));
+    .catch(() => res.status(Statuses.defaultError).send({ message: "Ошибка по умолчанию" }));
 };
 
 module.exports.createCard = (req, res) => {
@@ -16,9 +16,9 @@ module.exports.createCard = (req, res) => {
     .then(card => res.send(card))
     .catch(() =>
     if (err.name === 'ValidationError') {
-      res.status(statuses.badRequest).send({ message: 'Некорректные данные'});
+      res.status(Statuses.badRequest).send({ message: 'Некорректные данные'});
       } else {
-        res.status(statuses.defaultError).send({ message: 'Произошла ошибка' });
+        res.status(Statuses.defaultError).send({ message: 'Произошла ошибка' });
       }
     );
 };
@@ -28,9 +28,9 @@ module.exports.deleteCard = (req, res) => {
     .then(card => res.send(card))
     .catch(() =>
     if (err.name === 'CastError') {
-      res.status(400).send({ message: 'Некорректный id' });
+      res.status(Statuses.badRequest).send({ message: 'Некорректный id' });
     } else {
-      res.status(500).send({ message: 'Произошла ошибка' });
+      res.status(Statuses.defaultError).send({ message: 'Произошла ошибка' });
     }
     );
 };
@@ -43,9 +43,9 @@ module.exports.likeCard = (req, res) => {
   )
     .then(newCard => res.send(newCard))
     .catch(() => if (err.name === 'CastError') {
-      res.status(400).send({ message: 'Некорректный id' });
+      res.status(Statuses.badRequest).send({ message: 'Некорректный id' });
     } else {
-      res.status(500).send({ message: 'Произошла ошибка' });
+      res.status(Statuses.defaultError).send({ message: 'Произошла ошибка' });
     }
     );
 };
@@ -59,9 +59,9 @@ module.exports.dislikeCard = (req, res) => {
     .then(newCard => res.send(newCard))
     .catch(() =>
     if (err.name === 'CastError') {
-      res.status(400).send({ message: 'Некорректный id' });
+      res.status(Statuses.badRequest).send({ message: 'Некорректный id' });
     } else {
-      res.status(500).send({ message: 'Произошла ошибка' });
+      res.status(Statuses.defaultError).send({ message: 'Произошла ошибка' });
     }
     );
 };

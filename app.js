@@ -1,7 +1,7 @@
-import { statuses } from  "../constants/statuses";
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const Statuses = require( "../constants/statuses");
 
 
 const app = express();
@@ -24,7 +24,7 @@ app.use("/users", require("./routes/users"));
 app.use("/cards", require("./routes/cards"));
 
 app.use((req, res) => {
-  res.status(statuses.notFound).send({ message: 'Здесь нужен ответ'});
+  res.status(Statuses.notFound).send({ message: 'Здесь нужен ответ'});
 });
 
 app.listen(PORT);
