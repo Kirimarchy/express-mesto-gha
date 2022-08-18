@@ -14,7 +14,7 @@ module.exports.createCard = (req, res) => {
   } = req.body;
 
   Card.create({
-    name, link, owner: req.user._id, likes: likesId, createdAt,
+    name, link, owner: req.user._id,
   })
     .then((card) => res.send(card))
     .catch((err) => {
@@ -28,15 +28,15 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
-  .orFail(() => {
-    throw new Error('NotFound');
-  })
+    .orFail(() => {
+      throw new Error('NotFound');
+    })
     .then((card) => res.send(card))
     .catch((err) => {
-     if (err.message === 'NotFound') {
-     res.status(Statuses.notFound).send({message: 'Некорректный id' });
-     return;
-     }
+      if (err.message === 'NotFound') {
+        res.status(Statuses.notFound).send({ message: 'Некорректный id' });
+        return;
+      }
       if (err.name === 'CastError') {
         res.status(Statuses.badRequest).send({ message: 'Некорректный id' });
       } else {
@@ -51,15 +51,15 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
-  .orFail(() => {
-    throw new Error('NotFound');
-  })
+    .orFail(() => {
+      throw new Error('NotFound');
+    })
     .then((card) => res.send(card))
     .catch((err) => {
-     if (err.message === 'NotFound') {
-     res.status(Statuses.notFound).send({message: 'Некорректный id' });
-     return;
-     }
+      if (err.message === 'NotFound') {
+        res.status(Statuses.notFound).send({ message: 'Некорректный id' });
+        return;
+      }
       if (err.name === 'CastError') {
         res.status(Statuses.badRequest).send({ message: 'Некорректный id' });
       } else {
@@ -83,3 +83,4 @@ module.exports.dislikeCard = (req, res) => {
       }
     });
 };
+
