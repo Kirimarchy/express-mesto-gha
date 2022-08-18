@@ -10,7 +10,7 @@ module.exports.getCards = (req, res) => {
 
 module.exports.createCard = (req, res) => {
   const {
-    name, link, likesId, createdAt,
+    name, link,
   } = req.body;
 
   Card.create({
@@ -27,7 +27,7 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.card._id)
+  Card.findByIdAndRemove(req.params.cardId)
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -40,7 +40,7 @@ module.exports.deleteCard = (req, res) => {
 
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
-    req.card._id,
+    req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
@@ -56,7 +56,7 @@ module.exports.likeCard = (req, res) => {
 
 module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
-    req.card._id,
+    req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
