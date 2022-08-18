@@ -12,20 +12,19 @@ module.exports.getUser = (req, res) => {
     .orFail(() => {
       throw new Error('NotFound');
     })
-    .then((user) => res.send(user))
-    .catch((err) => {
-      switch (err.name) {
-        case 'NotFound':
-          res.status(Statuses.notFound).send({ message: 'Некорректный id' });
-          break;
-        case 'CastError':
+      .then((user) => res.send(user))
+      .catch((err) => {
+       if (err.message === 'NotFound') {
+       res.status(Statuses.notFound).send({message: 'Некорректный id' });
+       return;
+       }
+        if (err.name === 'CastError') {
           res.status(Statuses.badRequest).send({ message: 'Некорректный id' });
-          break;
-        default:
+        } else {
           res.status(Statuses.defaultError).send({ message: 'Произошла ошибка' });
-      }
-    });
-};
+        }
+      });
+  };
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
