@@ -34,13 +34,7 @@ module.exports.getCurrentUser = (req, res, next) => {
       throw new NotFoundError('Пользователь не найден');
     })
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new SomeWentWrongError('Некорректный id'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -64,7 +58,8 @@ module.exports.createUser = (req, res, next) => {
         } else {
           next(err);
         }
-      }));
+      }))
+    .catch(next);
 };
 
 module.exports.updateProfile = (req, res, next) => {
