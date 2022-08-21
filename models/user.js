@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -28,5 +29,13 @@ const UserSchema = new mongoose.Schema({
     select: false, // необходимо добавить поле select
   },
 });
+
+UserSchema.path('avatar').validate((link) => {
+  return validator.isURL(link);
+}, 'Укажите ссылку на аватар');
+
+UserSchema.path('email').validate((email) => {
+  return validator.isEmail(email);
+}, 'Некорректный email');
 
 module.exports = new mongoose.model('user', UserSchema);

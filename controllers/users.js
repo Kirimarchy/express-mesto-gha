@@ -1,4 +1,3 @@
-const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
@@ -6,15 +5,11 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-err');
 const SomeWentWrongError = require('../errors/something-went-wrong-err');
 const AuthError = require('../errors/auth-err');
-const DefaultError = require('../errors/default-err');
 const UsedEmailError = require('../errors/used-email-err');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(() => {
-      throw new SomeWentWrongError('Некорректный id');
-    })
     .catch(next);
 };
 
@@ -25,15 +20,12 @@ module.exports.getUser = (req, res, next) => {
     })
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.message === 'Пользователь не найден') {
-        return next(err);
-      }
       if (err.name === 'CastError') {
-        throw new SomeWentWrongError('Некорректный id');
+        next(new SomeWentWrongError('Некорректный id'));
+      } else {
+        next(err);
       }
-      throw new DefaultError('Произошла ошибка');
-    })
-    .catch(next);
+    });
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
@@ -43,42 +35,36 @@ module.exports.getCurrentUser = (req, res, next) => {
     })
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.message === 'Пользователь не найден') {
-        return next(err);
-      }
       if (err.name === 'CastError') {
-        throw new SomeWentWrongError('Некорректный id');
+        next(new SomeWentWrongError('Некорректный id'));
+      } else {
+        next(err);
       }
-      throw new DefaultError('Произошла ошибка');
-    })
-    .catch(next);
+    });
 };
 
 module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  if (!validator.isEmail(email)) {
-    throw new AuthError('Некорректный email');
-  }
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     })
-      .then((newUser) => res.send(newUser))
+      .then(() => res.status(200).send({
+        data: {
+          name, about, avatar, email,
+        },
+      }))
       .catch((err) => {
-        if (err.message === 'Некорректный email') {
-          return next(err);
-        }
         if (err.code === 11000) {
-          throw new UsedEmailError('Email уже используется');
+          next(new UsedEmailError('Email уже используется'));
+        } else if (err.name === 'ValidationError') {
+          next(new SomeWentWrongError('Некорректные данные'));
+        } else {
+          next(err);
         }
-        if (err.name === 'ValidationError') {
-          throw new SomeWentWrongError('Некорректные данные');
-        }
-        throw new DefaultError('Произошла ошибка');
-      })
-      .catch(next));
+      }));
 };
 
 module.exports.updateProfile = (req, res, next) => {
@@ -88,11 +74,11 @@ module.exports.updateProfile = (req, res, next) => {
     .then((newUser) => res.send(newUser))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new SomeWentWrongError('Некорректные данные');
+        next(new SomeWentWrongError('Некорректные данные'));
+      } else {
+        next(err);
       }
-      throw new DefaultError('Произошла ошибка');
-    })
-    .catch(next);
+    });
 };
 
 module.exports.updateAvatar = (req, res, next) => {
@@ -102,11 +88,11 @@ module.exports.updateAvatar = (req, res, next) => {
     .then((newUser) => res.send(newUser))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new SomeWentWrongError('Некорректные данные');
+        next(new SomeWentWrongError('Некорректные данные'));
+      } else {
+        next(err);
       }
-      throw new DefaultError('Произошла ошибка');
-    })
-    .catch(next);
+    });
 };
 
 module.exports.login = (req, res, next) => {

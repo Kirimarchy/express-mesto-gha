@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const CardSchema = new mongoose.Schema({
   name: {
@@ -27,5 +28,9 @@ const CardSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+
+CardSchema.path('link').validate((link) => {
+  return validator.isURL(link);
+}, 'Укажите ссылку на изображение');
 
 module.exports = new mongoose.model('card', CardSchema);

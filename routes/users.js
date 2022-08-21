@@ -14,26 +14,20 @@ const {
 // GET /users — возвращает всех пользователей
 router.get('/', getUsers);
 
+// GET /users/me - возвращает информацию о текущем пользователе
+router.get('/me', getCurrentUser);
+
 // GET /users/:userId - возвращает пользователя по _id
 router.get('/:userId', celebrate({
   params: Joi.object().keys({
-    _id: Joi.string().alphanum(),
+    _id: Joi.string().length(24).hex().required(),
   }),
 }), getUser);
-
-// GET /users/me - возвращает информацию о текущем пользователе
-router.get('/me', celebrate({
-  body: Joi.object().keys({
-    user: Joi.object().keys({
-      _id: Joi.string().alphanum(),
-    }),
-  }),
-}), getCurrentUser);
 
 // PATCH /users/me — обновляет профиль
 router.patch('/me', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().alphanum().min(2).max(30),
+    name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
   }),
 }), updateProfile);

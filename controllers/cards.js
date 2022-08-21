@@ -1,7 +1,6 @@
 const Card = require('../models/card');
 
 const SomeWentWrongError = require('../errors/something-went-wrong-err');
-const DefaultError = require('../errors/default-err');
 const NotFoundError = require('../errors/not-found-err');
 const AccessDeniedError = require('../errors/access-denied-err');
 
@@ -9,9 +8,6 @@ module.exports.getCards = (req, res, next) => {
   Card.find({})
     .populate(['owner', 'likes'])
     .then((cards) => res.send(cards))
-    .catch(() => {
-      throw new SomeWentWrongError('Некорректные данные');
-    })
     .catch(next);
 };
 
@@ -24,11 +20,11 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new SomeWentWrongError('Некорректные данные');
+        next(new SomeWentWrongError('Некорректные данные'));
+      } else {
+        next(err);
       }
-      throw new DefaultError('Произошла ошибка');
-    })
-    .catch(next);
+    });
 };
 
 module.exports.deleteCard = (req, res, next) => {
@@ -42,19 +38,16 @@ module.exports.deleteCard = (req, res, next) => {
         throw new AccessDeniedError('Вы не являетесь создателем данной карточки');
       }
 
-      Card.findByIdAndRemove(req.params.cardId)
+      return Card.findByIdAndRemove(req.params.cardId)
         .then((deleteCard) => res.send(deleteCard));
     })
     .catch((err) => {
-      if (err.message === 'Карточка не найдена' || err.message === 'Вы не являетесь создателем данной карточки') {
-        return next(err);
-      }
       if (err.name === 'CastError') {
-        throw new SomeWentWrongError('Некорректный id');
+        next(new SomeWentWrongError('Некорректный id'));
+      } else {
+        next(err);
       }
-      throw new DefaultError('Произошла ошибка');
-    })
-    .catch(next);
+    });
 };
 
 module.exports.likeCard = (req, res, next) => {
@@ -68,15 +61,12 @@ module.exports.likeCard = (req, res, next) => {
     })
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.message === 'Некорректный id') {
-        return next(err);
-      }
       if (err.name === 'CastError') {
-        throw new SomeWentWrongError('Некорректный id');
+        next(new SomeWentWrongError('Некорректный id'));
+      } else {
+        next(err);
       }
-      throw new DefaultError('Произошла ошибка');
-    })
-    .catch(next);
+    });
 };
 
 module.exports.dislikeCard = (req, res, next) => {
@@ -85,12 +75,15 @@ module.exports.dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(() => {
+      throw new NotFoundError('Карточка не найдена');
+    })
     .then((newCard) => res.send(newCard))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new SomeWentWrongError('Некорректный id');
+        next(new SomeWentWrongError('Некорректный id'));
+      } else {
+        next(err);
       }
-      throw new DefaultError('Произошла ошибка');
-    })
-    .catch(next);
+    });
 };

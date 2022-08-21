@@ -5,7 +5,8 @@
     "new-cap": ["error", { "newIsCap": false, "capIsNew": false }],
     "linebreak-style": 0,
     "no-multiple-empty-lines": ["error", { "max": 2, "maxEOF": 0 }],
-    "consistent-return": "off"
+    "consistent-return": "off",
+    "arrow-body-style": "off"
   }
 }
 
